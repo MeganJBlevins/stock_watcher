@@ -1,11 +1,12 @@
 @import 'variables';
 @import 'mixins';
 @import 'StockTicker/index';
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
 
 body {
  font-family: 'Open Sans', sans-serif;
  background-color: $background;
+ box-sizing: border-box;
 }
 p {
   font-size: 16px;

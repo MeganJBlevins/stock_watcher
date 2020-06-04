@@ -1,12 +1,17 @@
 <template>
   <div v-if="this.stock" :class="{ stock__card: true, up: this.up, down: this.down }">
-    <Slider />
+    <Slider
+      :min="this.stock.low | formatNumber"
+      :max="this.stock.high | formatNumber"
+      :current="this.stock.close | formatNumber"
+      :difference="this.getDailyDifference()"
+    />
     <div class="info">
-      <div class="company__info">
+      <div class="company">
         <h2 class="name">{{ this.stock.symbol }}</h2>
         <p class="symbol">{{ this.stock.symbol }}</p>
       </div>
-      <div class="stock__info">
+      <div class="totals">
         <p class="close">{{ this.stock.close | formatNumber}}</p>
         <div class="difference">
           <DownArrow v-if="this.down" />
@@ -14,6 +19,11 @@
           <p class="diff">{{ this.getDiff() | formatNumber}}</p>
           <p class="percentage">({{ this.getPercentChange() | formatNumber }}%)</p>
         </div>
+      </div>
+      <div class="daily">
+        <p class="open">Open <span>{{ this.stock.open | formatNumber }}</span></p>
+        <p class="high">High <span>{{ this.stock.high | formatNumber }}</span></p>
+        <p class="low">Low <span>{{ this.stock.low | formatNumber }}</span></p>
       </div>
     </div>
   </div>
@@ -64,6 +74,10 @@ export default {
     getPercentChange() {
       const changeValue = this.getDiff();
       return (changeValue / this.stock.open) * 100;
+    },
+    getDailyDifference() {
+      const dailyChangeRange = this.stock.high - this.stock.low;
+      return (dailyChangeRange / this.stock.low) * 100;
     }
   }
 }

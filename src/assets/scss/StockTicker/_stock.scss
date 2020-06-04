@@ -4,21 +4,25 @@
   box-shadow: 2px 5px 10px rgba(24,34,41,.3);
   padding: 0px 10px 5px;
   margin: 15px 0;
-  @media screen and (min-width: 768px){
-    width: 50%;
-    box-sizing: border-box;
-    display: flex;
+  @media screen and (min-width: 767px){
+    width: 48%;
+    display:flex;
+    padding: 0;
+    margin: 15px 7px;
   }
   .info {
     display: flex;
     flex-wrap: wrap;
     @media screen and (min-width: 768px){
-      width: 75%;
+      width: 66%;
       display: block;
-      padding: 0 15px;
+      padding: 0px 22px 15px;
     }
-    .company__info {
+    .company {
       width: 33%;
+      @media screen and (min-width: 767px){
+        width: 50%;
+      }
       .name {
         margin: 16px 0px 0px;
         width: 75%;
@@ -30,27 +34,37 @@
         margin-top: 0px;
       }
     }
-    .stock__info {
+    .totals {
       width: 66%;
+      @media screen and (min-width: 767px){
+        width: 100%;
+        display: flex;
+        margin-bottom: 20px;
+      }
       svg {
         width: 11px;
         height: 11px;
         margin-right: 5px;
       }
       .close {
-        font-size: 25px;
+        font-size: 28px;
         margin: 16px 0px;
         text-align: right;
-        @media screen and (min-width: 768px){
-          width: 25%;
+        color: $grey2;
+        @media screen and (min-width: 767px){
+          width: 40%;
+          text-align: left;
+          margin-bottom: 0;
+          margin-top: 0;
         }
       }
       .difference {
         margin-top: -16px;
         text-align: right;
-        @media screen and (min-width: 768px){
-          text-align: left;
-          width: 75%;
+        @media screen and (min-width: 767px){
+          width: 60%;
+          margin-top: auto;
+          margin-bottom: 0;
         }
         p {
           display: inline;
@@ -61,11 +75,31 @@
         
       }
     }
-    
-    
-   
-    
-    
+    .daily {
+      display: none;
+      @media screen and (min-width: 767px){
+        display: block;
+      }
+      p {
+        text-transform: uppercase;
+        display: inline-block;
+        flex-wrap: wrap;
+        margin-top: 0;
+        margin-bottom: 5px;
+        span {
+          color: $grey2;
+          font-weight: 700;
+        }
+      }
+      .open {
+        width: 50%;
+        box-sizing: border-box;
+      }
+      .high {
+        width: 50%;
+        box-sizing: border-box;
+      }
+    }
     
   }
   &.up {
