@@ -3,16 +3,16 @@
    <h1>Stock Watcher</h1>
    <div class="stock__input">
      <form @submit.prevent="addStock">
-       <input v-model="addStockSymbol" type="text" name="symbol"/>
-       <button type="submit" >Add Stock</button>
+       <input v-model="addStockSymbol" type="text" required name="symbol" placeholder="Enter Stock Symbol"/>
+       <button type="submit" >Add <span>Stock</span></button>
      </form>
    </div>
    <div v-if="this.dataReady" class="stock__container">
-     <div v-for="stock in stockData" :key="stock.symbol">
+     <transition v-for="stock in stockData" :key="stock.symbol">
        <Stock 
         :stock="stock"
        />
-     </div>
+     </transition>
    </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
     return {
       dataReady: false,
       addStockSymbol: '',
-      stocksVisible: ['IBM'],
+      stocksVisible: ['IBM', 'BA', 'BAC'],
       errors: [],
       apiEndpoint: 'https://www.alphavantage.co/',
       query: 'TIME_SERIES_MONTHLY_ADJUSTED',

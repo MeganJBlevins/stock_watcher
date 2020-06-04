@@ -1,6 +1,6 @@
 @mixin default-sizing($max) {
-  margin-left: 1.5625em;
-  margin-right: 1.5625em;
+  margin-left: 1em;
+  margin-right: 1em;
   max-width: $max;
   +desktop{
     margin-left: 2em;
