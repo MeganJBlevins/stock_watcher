@@ -1,25 +1,39 @@
 <template>
   <div class="container">
-   <h1>Stock Watcher</h1>
-   <div class="stock__input">
-     <form @submit.prevent="addStock">
-       <input v-model="addStockSymbol" type="text" required name="symbol" placeholder="Enter Stock Symbol"/>
-       <button type="submit" >Add <span>Stock</span></button>
-     </form>
-   </div>
-   <div v-if="this.dataReady" class="stock__container">
-     <transition v-for="stock in stockData" :key="stock.symbol">
-       <Stock 
-        :stock="stock"
-       />
-     </transition>
-   </div>
+    <div class="toggle">
+      <label for="dataInput">Data Type:</label>
+      <select name="dataInput" v-model="dataInput" @change="updateInput">
+        <option value="local">Local</option>
+        <option value="api">API</option>
+      </select>
+    </div>
+    <div v-if="this.loading">
+      <h2>Loading...</h2>
+    </div>
+    <div v-else>
+      <h1>Stock Watcher</h1>
+      <div class="stock__input">
+        <form @submit.prevent="addStock">
+          <input v-model="addStockSymbol" type="text" required name="symbol" placeholder="Enter Stock Symbol"/>
+          <button type="submit" >Add <span>Stock</span></button>
+        </form>
+      </div>
+      <div class="stock__container">
+        <transition v-for="stock in stockData" :key="stock.symbol">
+          <Stock 
+            :stock="stock"
+          />
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import Stock from './Stock.vue'
+import moment from 'moment'
+
 
 export default {
   name: 'StockContainer',
@@ -28,50 +42,125 @@ export default {
   },
   data() {
     return {
-      dataReady: false,
       addStockSymbol: '',
       stocksVisible: ['IBM', 'BA', 'BAC'],
       errors: [],
       apiEndpoint: 'https://www.alphavantage.co/',
-      query: 'TIME_SERIES_MONTHLY_ADJUSTED',
+      query: 'TIME_SERIES_DAILY_ADJUSTED',
       apiKey: 'HY0JP87WH3PG17X6',
-      stockData: []
+      stockData: this.populateLocalStock(),
+      apiStockData: [],
+      dataInput: 'local',
+      loading: false,
+      today:''
     }
   },
   async mounted() {
-    i = 0;
-    for (var i = 0; i < this.stocksVisible.length; i++) { 
-      const symbol = this.stocksVisible[i];
-      const endpointUrl = this.apiEndpoint + 'query?function=' + this.query + '&symbol=' + symbol + '&apikey=' + this.apiKey;
-      // const endpointUrl = 'https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=IBM&apikey=demo'
-      console.log('getting stock info... ', symbol);
-      try{
-        let response = await axios.get(endpointUrl, { headers: {
-          // remove headers
-        }
-        })
-        const stock = {
-          data: response.data["Monthly Adjusted Time Series"]['2020-06-04'],
-        }
-        const stockData = {
-          symbol: symbol,
-          open: stock['data']['1. open'],
-          high: stock['data']['2. high'],
-          low: stock['data']['3. low'],
-          close: stock['data']['4. close']
-        } 
-        this.stockData.push(stockData)
-        this.dataReady = true;
-        console.log('stockData: ', this.stockData[symbol]);
-      }catch(err){
-        console.log('error: ', err)
-      }
-      console.log(this.stockData);
-    }
+    this.today = moment().day(moment().day() >= 5 ? 5 :-2).format('YYYY-MM-DD');
+    // this.today = moment(new Date).format("YYYY-MM-DD")
+    console.log(this.today)
+    console.log(this.stockData);
   },
   methods: {
+    getApiStockData() {
+      this.loading = true;
+      i = 0;
+      for (var i = 0; i < this.stocksVisible.length; i++) { 
+        const symbol = this.stocksVisible[i];
+        const endpointUrl = this.apiEndpoint + 'query?function=' + this.query + '&symbol=' + symbol + '&apikey=' + this.apiKey;
+        // const endpointUrl = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&apikey=demo'
+        console.log('getting stock info... ', symbol, 'From: ', endpointUrl);
+        axios.get(endpointUrl)
+        .then(response => (
+          this.updateApiData(response, symbol)
+        ))
+        .catch(error => {
+          console.log(error)
+          this.errored = true
+        })
+        .finally(() => console.log('stock updated'))
+      }
+      this.loading = false;
+      return this.apiStockData;
+
+    },
     addStock() {
-      console.log('stock added', this.addStockSymbol)
+      console.log('adding stock symbol');
+    },
+    populateLocalStock() {
+     return [
+          {
+            name: 'ALPHABET INC. CL C',
+            symbol: 'GOOG',
+            open: 691,
+            high: 709.28,
+            low: 689.47,
+            close: 706.32
+          },
+          {
+            name: 'YAHOO! INC',
+            symbol: 'YHOO',
+            open: 29.28,
+            high: 29.66,
+            low: 29.06,
+            close: 29.27
+          },
+          {
+            name: 'AMERICAN INTERN…',
+            symbol: 'AIG',
+            open: 52.06,
+            high: 53.47,
+            low: 52.28,
+            close: 53.08
+          },
+          {
+            name: 'VELOCITYSHARES 3…',
+            symbol: 'UWTIF',
+            open: 1.37,
+            high: 1.74,
+            low: 1.50,
+            close: 1.61
+          },
+          {
+            name: '3X INVERSE CRUDE',
+            symbol: 'DWTIF',
+            open: 1253.41,
+            high: 297.50,
+            low: 245.59,
+            close: 253.41
+          },
+          {
+            name: 'GROUPON INC',
+            symbol: 'GRPN',
+            open: 4.08,
+            high: 4.13,
+            low: 3.60,
+            close: 3.74
+          },
+        ]  
+    },
+    updateApiData(response, symbol) {
+      console.log('response data: ', response)
+      const stock = response.data['Time Series (Daily)'][this.today];
+      console.log('stock data: ', stock);
+      const stockData = {
+        symbol: symbol,
+        open: stock['1. open'],
+        high: stock['2. high'],
+        low: stock['3. low'],
+        close: stock['4. close']
+      }
+      console.log(stockData);
+      this.apiStockData.push(stockData);
+    },
+    updateInput(){
+      if(this.dataInput == 'local') {
+        console.log('data Input: ', this.dataInput)
+        this.stockData = this.populateLocalStock()
+      } else {
+        this.stockData = this.getApiStockData()
+        console.log('data Input: ', this.dataInput)
+      }
     }
   }
 }

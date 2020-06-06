@@ -77,7 +77,8 @@ export default {
     },
     getDailyDifference() {
       const dailyChangeRange = this.stock.high - this.stock.low;
-      return (dailyChangeRange / this.stock.low) * 100;
+      const diff = (dailyChangeRange / this.stock.low) * 100;
+      return diff.toString();
     }
   }
 }

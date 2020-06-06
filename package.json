@@ -13,6 +13,7 @@
     "es6-promise": "^4.2.8",
     "numeral": "^2.0.6",
     "vue": "^2.6.11",
+    "vue-moment": "^4.1.0",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
