@@ -76,16 +76,18 @@ export default {
       return name
     },
     getDiff() {
-      return (this.stock.open - this.stock.close) * -1;
+     return (this.stock.open - this.stock.close) * -1;
     },
     getPercentChange() {
       const changeValue = this.getDiff();
       return (changeValue / this.stock.open) * 100;
     },
     getDailyDifference() {
-      const dailyChangeRange = this.stock.high - this.stock.low;
-      const diff = (dailyChangeRange / this.stock.low) * 100;
-      return diff.toString();
+      let perc = Math.round(((this.stock.close - this.stock.low) / (this.stock.high - this.stock.low)) * 100)
+      console.log(perc)
+      perc = 100 - perc
+      perc = perc - 7 // Pad for the middle of the slider arror
+      return perc.toString()
     }
   }
 }

@@ -121,6 +121,7 @@ export default {
       i = 0;
       for (var i = 0; i < this.stocksVisible.length; i++) { 
         const symbol = this.stocksVisible[i];
+        console.log(symbol);
         this.getStockData(symbol)
       }
       this.loading = false;
@@ -173,11 +174,29 @@ export default {
     addStock() {
       this.inputError = false;
       this.loading = true;
-      this.getStockData(this.addStockSymbol);
+      if (this.dataInput == 'api'){
+        this.getStockData(this.inputToUpper());
+      } else {
+        this.addDummyStock();
+      }
       if(!this.inputError){
-        this.stocksVisible += this.addStockSymbol;
+        this.stocksVisible += this.inputToUpper();
       }
       this.loading = false;
+    },
+    addDummyStock(){
+      if(this.inputToUpper() in StockSymbols.symbols){
+        this.stockData.push({
+          name: StockSymbols.symbols[this.inputToUpper()],
+          symbol: this.inputToUpper(),
+          open: 29.28,
+          high: 29.66,
+          low: 29.06,
+          close: 29.27
+        })
+      } else {
+        this.inputError = true;
+      }
     },
     updateInput(){
       if(this.dataInput == 'local') {
@@ -189,6 +208,9 @@ export default {
         } 
         this.stockData = this.apiStockData
       }
+    },
+    inputToUpper(){
+      return this.addStockSymbol.toUpperCase();
     }
   }
 }
