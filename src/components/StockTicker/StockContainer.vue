@@ -14,9 +14,12 @@
       <h1>Stock Watcher</h1>
       <div class="stock__input">
         <form @submit.prevent="addStock">
-          <input v-model="addStockSymbol" type="text" required name="symbol" placeholder="Enter Stock Symbol"/>
+          <input v-model="addStockSymbol" type="text" required name="symbol" placeholder="Enter stock symbol"/>
           <button type="submit" >Add <span>Stock</span></button>
         </form>
+        <div class="error" v-if="this.inputError">
+         <p>Sorry, we couldn't find that Symbol, please try again.</p>
+        </div>
       </div>
       <div class="stock__container">
         <transition v-for="stock in stockData" :key="stock.symbol">
@@ -33,7 +36,7 @@
 import axios from 'axios'
 import Stock from './Stock.vue'
 import moment from 'moment'
-
+import StockSymbols from './../symbols.js'
 
 export default {
   name: 'StockContainer',
@@ -53,6 +56,7 @@ export default {
       dataInput: 'local',
       loading: false,
       today:'',
+      inputError: false,
       localData: [
           {
             name: 'ALPHABET INC. CL C',
@@ -102,7 +106,8 @@ export default {
             low: 3.60,
             close: 3.74
           },
-        ]  
+        ],
+      StockSymbols
     }
   },
   async mounted() {
@@ -124,38 +129,54 @@ export default {
 
     },
     getStockData(symbol){
-      let stockData = ''
+      let stockData = null
       const endpointUrl = this.apiEndpoint + 'query?function=' + this.query + '&symbol=' + symbol + '&apikey=' + this.apiKey;
-       // console.log('getting stock info... ', symbol, 'From: ', endpointUrl);
-      axios.get(endpointUrl)
-        .then(response => (
-          this.stockData.push(this.updateApiData(response, symbol))
-        ))
-        .catch(error => {
-           console.log(error)
-          this.errored = true
-        })
-        .finally(() =>   console.log('stock updated'))
-        console.log('stock Data:91 = ', stockData)
+      if(symbol in StockSymbols.symbols){
+        try {
+          axios.get(endpointUrl)
+          .then(response => (
+            this.stockData.push(this.updateApiData(response, symbol))
+          ))
+          .catch(error => {
+            console.log(error)
+            this.errored = true
+          })
+          .finally(() =>   console.log('stock updated'))
+        } catch(e){
+          console.log(e);
+          this.inputError = true;
+        }
         return stockData
+      } else {
+        this.inputError = true;
+      }
+      
     },
     updateApiData(response, symbol) {
        // console.log('response data: ', response)
-      const stock = response.data['Time Series (Daily)'][this.today];
-       // console.log('stock data: ', stock);
-      const stockData = {
-        symbol: symbol,
-        open: stock['1. open'],
-        high: stock['2. high'],
-        low: stock['3. low'],
-        close: stock['4. close']
+      try {
+        const stock = response.data['Time Series (Daily)'][this.today];
+        const stockData = {
+          name: StockSymbols.symbols[symbol.toString()],
+          symbol: symbol,
+          open: stock['1. open'],
+          high: stock['2. high'],
+          low: stock['3. low'],
+          close: stock['4. close']
+        }
+        return stockData
+      } catch(e) {
+        console.log('unable to find in api', e);
+        this.inputError = true
       }
-       console.log('Stock Data:105 = ', stockData);
-      return stockData;
     },
-    addStock(symbol) {
+    addStock() {
+      this.inputError = false;
       this.loading = true;
-      this.getStockData(symbol);
+      this.getStockData(this.addStockSymbol);
+      if(!this.inputError){
+        this.stocksVisible += this.addStockSymbol;
+      }
       this.loading = false;
     },
     updateInput(){

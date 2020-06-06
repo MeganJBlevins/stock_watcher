@@ -6,13 +6,13 @@
         :style="{ top: this.difference + '%' }">
       </div>
       <div class="slider__background"></div>
-    </div>
-    <div class="labels">
-      <div class="high">
-          <p>{{ this.max }}</p>
-      </div>
-      <div class="low">
-          <p>{{ this.min }}</p>
+      <div class="labels">
+        <div class="high">
+            <p>{{ this.max }}</p>
+        </div>
+        <div class="low">
+            <p>{{ this.min }}</p>
+        </div>
       </div>
     </div>
   </div>

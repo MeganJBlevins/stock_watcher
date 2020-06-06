@@ -8,7 +8,7 @@
     />
     <div class="info">
       <div class="company">
-        <h2 class="name">{{ this.stock.symbol }}</h2>
+        <h2 class="name">{{ this.getName() }}</h2>
         <p class="symbol">{{ this.stock.symbol }}</p>
       </div>
       <div class="totals">
@@ -68,6 +68,13 @@ export default {
     }
   },
   methods: {
+    getName() {
+      let name = this.stock.name;
+      if (name == undefined){
+        name = this.stock.symbol;
+      }
+      return name
+    },
     getDiff() {
       return (this.stock.open - this.stock.close) * -1;
     },
