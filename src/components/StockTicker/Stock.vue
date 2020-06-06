@@ -8,7 +8,7 @@
     />
     <div class="info">
       <div class="company">
-        <h2 class="name">{{ this.getName() }}</h2>
+        <h2 class="name">{{ this.getName() | truncate(20, '...')}}</h2>
         <p class="symbol">{{ this.stock.symbol }}</p>
       </div>
       <div class="totals">
@@ -59,7 +59,14 @@ export default {
     if (!number) return ''
     number = Numeral(number).format("0,0.00")
     return number
-    }
+    },
+    truncate: function (text, length, suffix) {
+      if (text.length > length) {
+        return text.substring(0, length) + suffix;
+      } else {
+        return text;
+      }
+    },
   },
   mounted() {
     if(this.stock.open > this.stock.close) {

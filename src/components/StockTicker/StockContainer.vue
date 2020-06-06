@@ -3,8 +3,8 @@
     <div class="toggle">
       <label for="dataInput">Data Type:</label>
       <select name="dataInput" v-model="dataInput" @change="updateInput">
-        <option value="local">Local</option>
         <option value="api">API</option>
+        <option value="local">Local</option>
       </select>
     </div>
     <div v-if="this.loading">
@@ -53,7 +53,7 @@ export default {
       apiKey: 'HY0JP87WH3PG17X6',
       stockData: null,
       apiStockData: null,
-      dataInput: 'local',
+      dataInput: 'api',
       loading: false,
       today:'',
       inputError: false,
@@ -112,7 +112,7 @@ export default {
   },
   async mounted() {
     this.today = moment().day(moment().day() >= 5 ? 5 :-2).format('YYYY-MM-DD');
-    this.stockData = this.localData
+    this.stockData = this.getApiStockData()
   },
   methods: {
     getApiStockData() {
@@ -212,6 +212,7 @@ export default {
     inputToUpper(){
       return this.addStockSymbol.toUpperCase();
     }
-  }
+  },
+  
 }
 </script>

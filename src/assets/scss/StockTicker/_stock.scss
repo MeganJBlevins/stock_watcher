@@ -23,7 +23,7 @@
       padding: 0px 22px 15px;
     }
     .company {
-      width: 33%;
+      width: 66%;
       @media screen and (min-width: 767px){
         width: 100%;
       }
@@ -39,7 +39,7 @@
       }
     }
     .totals {
-      width: 66%;
+      width: 33%;
       @media screen and (min-width: 767px){
         width: 100%;
         display: flex;
@@ -128,6 +128,9 @@
     .difference {
       svg {
         fill: $red;
+      }
+      p {
+        color: $red;
       }
     }
   }
