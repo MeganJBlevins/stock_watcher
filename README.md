@@ -4,9 +4,9 @@
 
   I look forward to hearing your thoughts!
 
-  Megan Blevins
-  MeganBlevins.com
-  MeganJBlevins@gmail.com
+  Megan Blevins |
+  MeganBlevins.com |
+  MeganJBlevins@gmail.com |
   417.718.4470
 
 ## To run the project locally, in the project directory: 
