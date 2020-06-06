@@ -48,47 +48,12 @@ export default {
       apiEndpoint: 'https://www.alphavantage.co/',
       query: 'TIME_SERIES_DAILY_ADJUSTED',
       apiKey: 'HY0JP87WH3PG17X6',
-      stockData: this.populateLocalStock(),
-      apiStockData: [],
+      stockData: null,
+      apiStockData: null,
       dataInput: 'local',
       loading: false,
-      today:''
-    }
-  },
-  async mounted() {
-    this.today = moment().day(moment().day() >= 5 ? 5 :-2).format('YYYY-MM-DD');
-    // this.today = moment(new Date).format("YYYY-MM-DD")
-    console.log(this.today)
-    console.log(this.stockData);
-  },
-  methods: {
-    getApiStockData() {
-      this.loading = true;
-      i = 0;
-      for (var i = 0; i < this.stocksVisible.length; i++) { 
-        const symbol = this.stocksVisible[i];
-        const endpointUrl = this.apiEndpoint + 'query?function=' + this.query + '&symbol=' + symbol + '&apikey=' + this.apiKey;
-        // const endpointUrl = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&apikey=demo'
-        console.log('getting stock info... ', symbol, 'From: ', endpointUrl);
-        axios.get(endpointUrl)
-        .then(response => (
-          this.updateApiData(response, symbol)
-        ))
-        .catch(error => {
-          console.log(error)
-          this.errored = true
-        })
-        .finally(() => console.log('stock updated'))
-      }
-      this.loading = false;
-      return this.apiStockData;
-
-    },
-    addStock() {
-      console.log('adding stock symbol');
-    },
-    populateLocalStock() {
-     return [
+      today:'',
+      localData: [
           {
             name: 'ALPHABET INC. CL C',
             symbol: 'GOOG',
@@ -138,11 +103,46 @@ export default {
             close: 3.74
           },
         ]  
+    }
+  },
+  async mounted() {
+    this.today = moment().day(moment().day() >= 5 ? 5 :-2).format('YYYY-MM-DD');
+    this.stockData = this.localData
+  },
+  methods: {
+    getApiStockData() {
+      this.loading = true;
+      const initApiStocks = [];
+      i = 0;
+      for (var i = 0; i < this.stocksVisible.length; i++) { 
+        const symbol = this.stocksVisible[i];
+        this.getStockData(symbol)
+      }
+      this.loading = false;
+       console.log('Init Api Stocks:74 = ', initApiStocks);
+      return initApiStocks;
+
+    },
+    getStockData(symbol){
+      let stockData = ''
+      const endpointUrl = this.apiEndpoint + 'query?function=' + this.query + '&symbol=' + symbol + '&apikey=' + this.apiKey;
+       // console.log('getting stock info... ', symbol, 'From: ', endpointUrl);
+      axios.get(endpointUrl)
+        .then(response => (
+          this.stockData.push(this.updateApiData(response, symbol))
+        ))
+        .catch(error => {
+           console.log(error)
+          this.errored = true
+        })
+        .finally(() =>   console.log('stock updated'))
+        console.log('stock Data:91 = ', stockData)
+        return stockData
     },
     updateApiData(response, symbol) {
-      console.log('response data: ', response)
+       // console.log('response data: ', response)
       const stock = response.data['Time Series (Daily)'][this.today];
-      console.log('stock data: ', stock);
+       // console.log('stock data: ', stock);
       const stockData = {
         symbol: symbol,
         open: stock['1. open'],
@@ -150,16 +150,23 @@ export default {
         low: stock['3. low'],
         close: stock['4. close']
       }
-      console.log(stockData);
-      this.apiStockData.push(stockData);
+       console.log('Stock Data:105 = ', stockData);
+      return stockData;
+    },
+    addStock(symbol) {
+      this.loading = true;
+      this.getStockData(symbol);
+      this.loading = false;
     },
     updateInput(){
       if(this.dataInput == 'local') {
-        console.log('data Input: ', this.dataInput)
-        this.stockData = this.populateLocalStock()
+        this.stockData = this.localData
       } else {
-        this.stockData = this.getApiStockData()
-        console.log('data Input: ', this.dataInput)
+        if (this.apiStockData == null){
+          const initData = this.getApiStockData()
+          this.apiStockData = initData
+        } 
+        this.stockData = this.apiStockData
       }
     }
   }
